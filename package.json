@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -r git@github.com:GunborgsCookies/PortfolioVol2.git",
+    "deploy": "gh-pages -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -25,3 +25,5 @@
     "vite": "^6.2.6"
   }
 }
+
+
