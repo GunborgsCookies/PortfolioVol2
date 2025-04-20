@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alexander Haanpää Portfolio</title>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        background-color: black;
+        font-family: monospace;
+        color: #67e8f9;
+      }
+
+      #app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  z-index: -1;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  z-index: -2;
+  pointer-events: none;
+  display: block;
+}
+
+      #reticle {
+        box-shadow: 0 0 10px #67e8f9, 0 0 20px #22d3ee;
+        border-radius: 50%;
+      }
+    </style>
+    <script type="module" crossorigin src="/PortfolioVol2/assets/index-ikepA8xl.js"></script>
+    <link rel="stylesheet" crossorigin href="/PortfolioVol2/assets/index-CsinTNUW.css">
+  </head>
+  <body class="text-cyan-300 font-mono">
+    <!-- Canvas och renderer -->
+    <div id="intro-canvas-wrapper" class="relative h-screen w-full overflow-hidden">
+      <div id="app"></div>
+
+      <!-- Intro UI -->
+      <section id="intro-ui" class="relative h-full w-full z-10 flex items-center justify-center flex-col text-center bg-transparent">
+        <h1 class="text-5xl font-bold text-cyan-400">MY SPACE</h1>
+        <p class="mt-4 text-lg text-cyan-300">Skriv <code>scan</code> eller tryck start</p>
+        <input id="scan-input" placeholder=">_" class="mt-6 px-4 py-2 bg-black text-cyan-300 border border-cyan-300 text-center" />
+        <button id="start-btn" class="mt-4 px-6 py-2 bg-cyan-400 text-black font-bold shadow-md">START SCAN</button>
+        <button id="skip-intro-btn" class="fixed top-4 right-4 z-50 bg-cyan-400 text-black px-4 py-2 rounded font-bold shadow hover:bg-cyan-300">
+          SKIP INTRO
+        </button>
+      </section>
+
+      <!-- Scanning UI -->
+      <section id="scan-ui" class="hidden absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
+        <div class="absolute top-8 left-8 bg-black/50 p-4 border border-cyan-400 rounded shadow text-cyan-300">
+          🛰 SCANNING SECTOR ACTIVE
+        </div>
+      </section>
+
+          <!-- Sikte -->
+          <div id="reticle" class="hidden absolute top-1/2 left-1/2 w-10 h-10 z-10 pointer-events-none -translate-x-1/2 -translate-y-1/2 border-2 border-cyan-300 rounded-full shadow-lg animate-pulse"></div>
+
+
+
+      <!-- Mål hittat -->
+      <section id="target-found-ui"
+      class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-4 bg-black/80 border border-cyan-400 rounded text-cyan-300">
+    
+
+        <h2 class="text-xl font-bold mb-1">🧠 Mål hittat!</h2>
+        <p class="text-sm">Okänd intelligens uppfångad...</p>
+        <button id="explore-btn" class="mt-3 px-3 py-1 bg-cyan-400 text-black font-bold rounded">EXPLORE</button>
+      </section>
+
+      <!-- Dock prompt -->
+      <section id="dock-ui" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-6 bg-black/90 border border-cyan-500 rounded text-center text-cyan-300">
+        <h2 class="text-xl font-bold mb-2">DOCK TO CORTEX?</h2>
+        <button id="dock-btn" class="mt-3 px-4 py-2 bg-cyan-400 text-black font-bold rounded">CONNECT</button>
+      </section>
+
+      <!-- Docking status popup -->
+      <div id="dock-status" class="hidden absolute top-8 right-8 bg-black/80 border border-green-500 text-green-400 px-6 py-4 rounded shadow-lg z-30">
+        ✅ Docking complete. Systems online.
+      </div>
+    </div>
+
+    <main class="relative z-0">
+
+      <!-- TERMINAL POPUP -->
+<div id="terminal-popup" class="hidden fixed top-8 left-8 w-[400px] max-h-[500px] bg-black/90 text-cyan-300 border border-cyan-500 shadow-lg rounded p-4 overflow-y-auto z-50">
+  <div class="flex justify-between items-center mb-2">
+    <h2 class="text-sm font-bold tracking-widest">TERMINAL</h2>
+    <button id="close-terminal" class="text-red-400 hover:text-red-300 text-xs font-bold">CLOSE</button>
+  </div>
+  <div id="terminal-lines" class="text-sm font-mono leading-relaxed h-64 overflow-y-auto"></div>
+</div>
+
+<!-- OPEN TERMINAL BUTTON -->
+<button id="open-terminal-btn" class="fixed bottom-4 right-4 bg-cyan-500 text-black px-3 py-2 rounded shadow-md text-xs z-50 hover:bg-cyan-400">
+  OPEN TERMINAL
+</button>
+
+  
+    
+  <!-- ABOUT + PROFILE + PROJECTS -->
+<section id="about-me" class="bg-black text-cyan-300 font-mono px-6 md:px-12 py-24 w-full">
+  <!-- Overlay Effect -->
+  <div id="glitch-overlay" class="hidden fixed inset-0 z-40 bg-white opacity-20 pointer-events-none"></div>
+
+  <!-- Profile + Text -->
+  <div id="profile-container" class="hidden max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center md:items-center">
+    
+    <!-- Bild -->
+    <div class="relative w-64 h-64 border-4 border-cyan-500 overflow-hidden shrink-0">
+      <img id="profile-img" src="/PortfolioVol2/assets/IMG_2104-DnF5xPJZ.jpg"
+           class="w-full h-full object-cover grayscale contrast-125 brightness-75 opacity-0 transition-all duration-1000"
+           alt="Alexander Haanpää" />
+      <div class="absolute inset-0 bg-noise z-20 opacity-20 mix-blend-soft-light"></div>
+    </div>
+
+    <!-- Text & Ikoner -->
+    <div class="flex flex-col justify-center flex-1">
+      <div id="about-text" class="space-y-6 text-sm leading-relaxed text-cyan-300 font-mono opacity-0 transition-opacity duration-700 min-h-[14rem]">
+        <p><span class="typed-line" data-full-text="> Namn: Alexander Haanpää">></span></p>
+        <p><span class="typed-line" data-full-text="> Jag är 35 år gammal och bor i Stockholm. Just nu studerar jag grafisk design och webbutveckling...">></span></p>
+        <p><span class="typed-line" data-full-text="> Min passion ligger i att kombinera teknik och estetik – för att bygga framtidens upplevelser.">></span></p>
+      </div>
+    <!-- Ikoner -->
+    <div class="flex gap-6 pt-4 text-cyan-400">
+      <!-- Facebook -->
+      <a href="https://facebook.com" target="_blank" aria-label="Facebook" class="hover:text-blue-500 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.2 3-3.2.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.2l-.4 3h-1.8v7A10 10 0 0 0 22 12z"/>
+        </svg>
+      </a>
+
+      <!-- Instagram -->
+      <a href="https://instagram.com" target="_blank" aria-label="Instagram" class="hover:text-pink-400 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zm8.75 2a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7.25a4.75 4.75 0 1 1 0 9.5 4.75 4.75 0 0 1 0-9.5zm0 1.5a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5z"/>
+        </svg>
+      </a>
+    </div>
+
+
+
+</section>
+
+<!-- PROJECTS -->
+<section id="projects-section" class="pt-16 w-full">
+  <div class="max-w-4xl mx-auto">
+    <div id="project-grid" class="hidden grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-6">
+      <div class="project-tile opacity-0 transform scale-90 transition-all duration-700 border border-cyan-500 p-4">
+        <img src="/src/assets/images/project1.jpg" alt="Project 1" class="w-full h-32 object-cover mb-3">
+        <p class="text-xs text-center text-cyan-300">Stockholm Classic Poker Run</p>
+      </div>
+      <div class="project-tile opacity-0 transform scale-90 transition-all duration-700 border border-cyan-500 p-4">
+        <img src="/src/assets/images/project2.jpg" alt="Project 2" class="w-full h-32 object-cover mb-3">
+        <p class="text-xs text-center text-cyan-300">Portfolio Vol.1</p>
+      </div>
+      <div class="project-tile opacity-0 transform scale-90 transition-all duration-700 border border-cyan-500 p-4">
+        <img src="/src/assets/images/project3.jpg" alt="Project 3" class="w-full h-32 object-cover mb-3">
+        <p class="text-xs text-center text-cyan-300">Kognitiva UI-koncept</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+          
+          
+          
+
+      <!-- Webbprojekt med toggle -->
+      <section id="webbutveckling" class="hidden opacity-0 pt-16 w-full bg-black">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold mb-4 uppercase text-cyan-300">Webbprojekt</h2>
+          <p class="text-md leading-relaxed text-center md:text-left text-cyan-400 mb-6">
+            Ett urval av mina arbeten.
+          </p>
+
+          <div class="space-y-8">
+            <!-- Row 1 -->
+            <div class="process-row border-t border-cyan-500 pt-5 relative group">
+              <div class="flex items-center justify-between cursor-pointer pt-1 pb-0.5">
+                <div class="flex items-center gap-4">
+                  <span class="text-xl text-cyan-400">01</span>
+                  <h3 class="text-2xl font-semibold leading-none">Stockholm Classic Poker Run</h3>
+                </div>
+                <button class="toggle-btn text-2xl text-cyan-400">+</button>
+              </div>
+              <div class="absolute -top-60 left-0 w-full hidden group-hover:flex justify-center">
+                <video class="rounded-lg w-96 shadow-lg" autoplay muted loop playsinline>
+                  <source src="/PortfolioVol2/assets/classicpokerrun-B5_4dOow.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="process-extra max-h-0 overflow-hidden transition-all duration-500 mt-4 text-cyan-200">
+                <p>En hemsida skapad för evenemanget Stockholm Classic Poker Run. Här kan deltagare hitta information, anmäla sig via ett formulär och följa rutten direkt på en interaktiv karta.</p>
+              </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="process-row border-t border-cyan-500 pt-5 relative group">
+              <div class="flex items-center justify-between cursor-pointer pt-1 pb-0.5">
+                <div class="flex items-center gap-4">
+                  <span class="text-xl text-cyan-400">02</span>
+                  <h3 class="text-2xl font-semibold leading-none">Portfolio Vol.1</h3>
+                </div>
+                <button class="toggle-btn text-2xl text-cyan-400">+</button>
+              </div>
+              <div class="absolute -top-60 left-0 w-full hidden group-hover:flex justify-center">
+                <video class="rounded-lg w-96 shadow-lg" autoplay muted loop playsinline>
+                  <source src="/PortfolioVol2/assets/portfolio-Bd6JSXMr.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="process-extra max-h-0 overflow-hidden transition-all duration-500 mt-4 text-cyan-200">
+                <p>Min första portfolio – ett design- och kodprojekt skapat under min utbildning, med fokus på form, interaktivitet och personlig utveckling.</p>
+              </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="process-row border-t border-cyan-500 pt-5 relative group">
+              <div class="flex items-center justify-between cursor-pointer pt-1 pb-0.5">
+                <div class="flex items-center gap-4">
+                  <span class="text-xl text-cyan-400">03</span>
+                  <h3 class="text-2xl font-semibold leading-none">Pågående sida</h3>
+                </div>
+                <button class="toggle-btn text-2xl text-cyan-400">+</button>
+              </div>
+              <div class="absolute -top-60 left-0 w-full hidden group-hover:flex justify-center">
+                <video class="rounded-lg w-96 shadow-lg" autoplay muted loop playsinline>
+                  <source src="/PortfolioVol2/assets/classicpokerrun-B5_4dOow.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="process-extra max-h-0 overflow-hidden transition-all duration-500 mt-4 text-cyan-200">
+                <p>My process starts by predicting and crafting a visual narrative for the project...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grafisk Design -->
+      <section id="grafiskdesign" class="hidden opacity-0 pt-16 w-full bg-black">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold mb-4 uppercase text-cyan-300">Grafisk design</h2>
+          <p class="text-md leading-relaxed text-center md:text-left text-cyan-400 mb-6">
+            Ett urval av mina grafiska projekt och mockups.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 border-t border-b border-cyan-500">
+            <!-- Mockup 1 -->
+            <div class="relative group aspect-square w-full border-b md:border-r border-cyan-500">
+              <img src="/PortfolioVol2/assets/473371948_10170626448810123_5802961511874517813_n-DDSkur8V.jpg" alt="Mockup 1" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm px-4 text-center">
+                Cykelringen – Katalog Design & Layout
+              </div>
+            </div>
+
+            <!-- Mockup 2 -->
+            <div class="relative group aspect-square w-full border-b border-cyan-500">
+              <img src="/PortfolioVol2/assets/Sj%C3%A4lvportr%C3%A4tt-Cwk9e6vF.jpg" alt="Mockup 2" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm px-4 text-center">
+                Självporträtt – Skapad under min utbildning
+              </div>
+            </div>
+
+            <!-- Mockup 3 -->
+            <div class="relative group aspect-square w-full md:border-r border-cyan-500">
+              <img src="/PortfolioVol2/assets/fonstermontoren-2D629pVc.jpg" alt="Mockup 3" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm px-4 text-center">
+                Logotyp – Skapad under min utbildning
+              </div>
+            </div>
+
+            <!-- Mockup 4 -->
+            <div class="relative group aspect-square w-full">
+              <img src="/PortfolioVol2/assets/Flagga-6szKBoCu.jpg" alt="Mockup 4" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm px-4 text-center">
+                Fiktiv logga för "Dackarna" speedway – Skoluppgift i Grafisk Design
+              </div>
+            </div>
+          </div>
+        </div>
+</section>
+
+
+    </main>
+
+    <script>
+      function showDockStatusAndScroll() {
+        const dockStatus = document.getElementById("dock-status");
+        if (dockStatus) {
+          dockStatus.classList.remove("hidden");
+          dockStatus.textContent = "✅ CORTEX ONLINE – Scrollar ner...";
+        }
+    
+        setTimeout(() => {
+          if (dockStatus) {
+            dockStatus.classList.add("hidden");
+          }
+    
+          const cortex = document.getElementById("cortex-ui");
+          if (cortex) {
+            // Fördröjd scroll för säker layout
+            setTimeout(() => {
+              cortex.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 200); // Vänta lite extra efter hidden
+          }
+    
+          document.body.style.overflow = "auto";
+        }, 2500);
+      }
+    
+      window.showDockStatusAndScroll = showDockStatusAndScroll;
+    </script>
+    
+    
+  </body>
+</html>
