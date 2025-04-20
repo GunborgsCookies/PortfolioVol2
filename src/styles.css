@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* 👾 PIXLIG GLITCH PÅ BILD */
+@keyframes glitch-pixel {
+    0% { clip-path: inset(20% 0 70% 0); transform: scale(1.02); }
+    25% { clip-path: inset(5% 0 85% 0); transform: scale(0.98); }
+    50% { clip-path: inset(40% 0 40% 0); transform: scale(1.03); }
+    75% { clip-path: inset(10% 0 75% 0); transform: scale(1); }
+    100% { clip-path: inset(0 0 0 0); transform: scale(1); }
+  }
+  
+  .glitch-now {
+    animation: glitch-pixel 0.5s steps(2, end);
+    filter: contrast(2) brightness(1.2) saturate(2) hue-rotate(30deg);
+    image-rendering: pixelated;
+  }
+  
+  /* 🌌 HELSKÄRMSGLITCH OVERLAY */
+  #glitch-overlay {
+    background: white;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+  
+  #glitch-overlay.animate {
+    animation: screenFlash 0.3s ease-out;
+  }
+  
+  @keyframes screenFlash {
+    0%   { opacity: 0.2; }
+    50%  { opacity: 0.5; }
+    100% { opacity: 0; }
+  }
+  
+  .section-fade-in {
+    animation: fadeSlideIn 1s ease-out forwards;
+  }
+  
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
