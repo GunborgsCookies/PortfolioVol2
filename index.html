@@ -305,33 +305,7 @@ canvas {
     <script type="module" src="/src/main.js"></script>
     <script type="module" src="src/scripts/toggleProjects.js"></script>
     <script type="module" src="src/scripts/aboutLoading.js"></script>
-    <script>
-      function showDockStatusAndScroll() {
-        const dockStatus = document.getElementById("dock-status");
-        if (dockStatus) {
-          dockStatus.classList.remove("hidden");
-          dockStatus.textContent = "✅ CORTEX ONLINE – Scrollar ner...";
-        }
-    
-        setTimeout(() => {
-          if (dockStatus) {
-            dockStatus.classList.add("hidden");
-          }
-    
-          const cortex = document.getElementById("cortex-ui");
-          if (cortex) {
-            // Fördröjd scroll för säker layout
-            setTimeout(() => {
-              cortex.scrollIntoView({ behavior: "smooth", block: "start" });
-            }, 200); // Vänta lite extra efter hidden
-          }
-    
-          document.body.style.overflow = "auto";
-        }, 2500);
-      }
-    
-      window.showDockStatusAndScroll = showDockStatusAndScroll;
-    </script>
+  
     
     
   </body>
