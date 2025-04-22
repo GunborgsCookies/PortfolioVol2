@@ -27,9 +27,18 @@ let dockStarted = false;
 let warpTriggered = false;
 
 export function showDockStatusAndScroll() {
+  console.log("🧪 Funktion startar!");
+
   const terminal = document.getElementById("terminal-lines");
   const terminalPopup = document.getElementById("terminal-popup");
-  if (!terminal || !terminalPopup) return;
+
+  console.log("📦 terminal:", terminal);
+  console.log("📦 terminalPopup:", terminalPopup);
+
+  if (!terminal || !terminalPopup) {
+    console.warn("❌ Saknar terminal-element. Funktionen avbryts.");
+    return;
+  }
 
   terminalPopup.classList.remove("hidden");
   terminal.innerHTML = "";
@@ -50,14 +59,13 @@ export function showDockStatusAndScroll() {
       terminal.scrollTop = terminal.scrollHeight;
       return;
     }
-
     const line = document.createElement("p");
     line.textContent = fullText[index];
     terminal.appendChild(line);
     terminal.scrollTop = terminal.scrollHeight;
 
     index++;
-    setTimeout(nextLine, 1000);
+    setTimeout(nextLine, 800);
   }
 
   nextLine();
@@ -154,7 +162,10 @@ function showDockPrompt() {
               requestAnimationFrame(animateJump);
             } else {
               brain.scale.copy(originalScale);
-              showDockStatusAndScroll();
+              setTimeout(() => {
+                console.log("✅ Dockning klar. Visar terminal...");
+                showDockStatusAndScroll();
+              }, 200);
             }
           }
           requestAnimationFrame(animateJump);
@@ -168,15 +179,6 @@ function showDockPrompt() {
     }, 20);
   });
 }
-
-
-// ... resten av filen är oförändrad ...
-
-
-
-
-// ... resten av filen är oförändrad ...
-
 
 export const intro = {
   init() {
