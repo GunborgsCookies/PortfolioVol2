@@ -28,7 +28,11 @@ let warpTriggered = false;
 
 export function showDockStatusAndScroll() {
   const terminal = document.getElementById("terminal-lines");
-  if (!terminal) return;
+  const terminalPopup = document.getElementById("terminal-popup");
+  if (!terminal || !terminalPopup) return;
+
+  terminalPopup.classList.remove("hidden");
+  terminal.innerHTML = "";
 
   const fullText = [
     "> CONNECTED.",
@@ -38,8 +42,6 @@ export function showDockStatusAndScroll() {
     "> Loading subject...",
     "> Docking complete."
   ];
-
-  terminal.innerHTML = "";
 
   let index = 0;
 
@@ -59,10 +61,20 @@ export function showDockStatusAndScroll() {
   }
 
   nextLine();
+
+  setTimeout(() => {
+    const aboutSection = document.getElementById("about-me");
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, 3000);
 }
 
-// Gör funktionen tillgänglig globalt så den kan anropas från docknings-animationen
 window.showDockStatusAndScroll = showDockStatusAndScroll;
+
+document.getElementById("open-terminal-btn")?.addEventListener("click", () => {
+  showDockStatusAndScroll();
+});
 
 function showDockPrompt() {
   if (dockStarted) return;
@@ -158,6 +170,8 @@ function showDockPrompt() {
 }
 
 // ... resten av filen är oförändrad ...
+
+
 
 
 // ... resten av filen är oförändrad ...
