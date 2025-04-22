@@ -3,6 +3,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { createStarfield, updateStarfield } from "../environment/starfield.js";
 import { scene, camera } from "../sharedScene.js";
 
+const modelPath = import.meta.env.BASE_URL + "model/Untitled.glb";
+
 export function fadeStarfield(color = 0x223366, opacity = 0.3) {
   const starfield = scene.getObjectByName("Starfield");
   if (starfield && starfield.material) {
@@ -23,6 +25,39 @@ let brainLoaded = false;
 let brainAdded = false;
 let dockStarted = false;
 let warpTriggered = false;
+
+function playTerminalSequence(onComplete) {
+  const terminal = document.getElementById("terminal-output");
+  if (!terminal) return;
+
+  const messages = [
+    "> CONNECTED.",
+    "> Identity confirmed.",
+    "> All systems online.",
+    "> Initializing profile...",
+    "> Loading subject...",
+    "> Docking complete."
+  ];
+
+  let index = 0;
+
+  function nextLine() {
+    if (index >= messages.length) {
+      if (typeof onComplete === "function") onComplete();
+      return;
+    }
+
+    const line = document.createElement("p");
+    line.textContent = messages[index];
+    terminal.appendChild(line);
+    terminal.scrollTop = terminal.scrollHeight;
+
+    index++;
+    setTimeout(nextLine, 1400);
+  }
+
+  setTimeout(nextLine, 600);
+}
 
 function showDockPrompt() {
   if (dockStarted) return;
@@ -102,23 +137,25 @@ function showDockPrompt() {
               requestAnimationFrame(animateJump);
             } else {
               brain.scale.copy(originalScale);
+              playTerminalSequence(() => {
+                if (typeof window.showDockStatusAndScroll === "function") {
+                  window.showDockStatusAndScroll();
+                }
+              });
             }
           }
           requestAnimationFrame(animateJump);
         }
 
-        if (typeof window.showDockStatusAndScroll === "function") {
-          window.showDockStatusAndScroll();
+        const starfield = scene.getObjectByName("Starfield");
+        if (starfield && starfield.material) {
+          starfield.material.color = new THREE.Color(0x8844ff);
         }
       }
     }, 20);
-
-    const starfield = scene.getObjectByName("Starfield");
-    if (starfield && starfield.material) {
-      starfield.material.color = new THREE.Color(0x8844ff);
-    }
   });
 }
+
 
 export const intro = {
   init() {
@@ -201,8 +238,8 @@ export const intro = {
       }
 
       const targetDistance = 400;
-
       const dist = camera.position.distanceTo(brain.position);
+
       if (dist > targetDistance) {
         camera.translateZ(-speed);
       } else {
@@ -227,7 +264,7 @@ function loadBrainModel() {
   if (brainAdded) return;
 
   const loader = new GLTFLoader();
-  loader.load("/model/Untitled.glb", (gltf) => {
+  loader.load(modelPath, (gltf) => {
     brain = gltf.scene;
     brain.position.set(0, 0, -2000);
     brain.scale.set(20, 20, 20);
@@ -281,7 +318,7 @@ function createMiniBrain() {
   miniRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
   const loader = new GLTFLoader();
-  loader.load("/model/Untitled.glb", (gltf) => {
+  loader.load(modelPath, (gltf) => {
     const miniBrain = gltf.scene;
     miniBrain.scale.set(0.15, 0.15, 0.15);
     miniBrain.position.set(-1.7, -1.3, 0);
