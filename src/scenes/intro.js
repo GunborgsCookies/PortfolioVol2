@@ -61,6 +61,9 @@ export function showDockStatusAndScroll() {
   nextLine();
 }
 
+// Gör funktionen tillgänglig globalt så den kan anropas från docknings-animationen
+window.showDockStatusAndScroll = showDockStatusAndScroll;
+
 function showDockPrompt() {
   if (dockStarted) return;
   dockStarted = true;
@@ -153,6 +156,9 @@ function showDockPrompt() {
     }, 20);
   });
 }
+
+// ... resten av filen är oförändrad ...
+
 
 export const intro = {
   init() {
