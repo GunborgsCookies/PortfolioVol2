@@ -26,11 +26,11 @@ let brainAdded = false;
 let dockStarted = false;
 let warpTriggered = false;
 
-function playTerminalSequence(onComplete) {
+export function showDockStatusAndScroll() {
   const terminal = document.getElementById("terminal-output");
   if (!terminal) return;
 
-  const messages = [
+  const fullText = [
     "> CONNECTED.",
     "> Identity confirmed.",
     "> All systems online.",
@@ -39,24 +39,26 @@ function playTerminalSequence(onComplete) {
     "> Docking complete."
   ];
 
+  terminal.innerHTML = "";
+
   let index = 0;
 
   function nextLine() {
-    if (index >= messages.length) {
-      if (typeof onComplete === "function") onComplete();
+    if (index >= fullText.length) {
+      terminal.scrollTop = terminal.scrollHeight;
       return;
     }
 
     const line = document.createElement("p");
-    line.textContent = messages[index];
+    line.textContent = fullText[index];
     terminal.appendChild(line);
     terminal.scrollTop = terminal.scrollHeight;
 
     index++;
-    setTimeout(nextLine, 1400);
+    setTimeout(nextLine, 1000);
   }
 
-  setTimeout(nextLine, 600);
+  nextLine();
 }
 
 function showDockPrompt() {
@@ -137,11 +139,7 @@ function showDockPrompt() {
               requestAnimationFrame(animateJump);
             } else {
               brain.scale.copy(originalScale);
-              playTerminalSequence(() => {
-                if (typeof window.showDockStatusAndScroll === "function") {
-                  window.showDockStatusAndScroll();
-                }
-              });
+              showDockStatusAndScroll();
             }
           }
           requestAnimationFrame(animateJump);
@@ -155,7 +153,6 @@ function showDockPrompt() {
     }, 20);
   });
 }
-
 
 export const intro = {
   init() {
