@@ -45,7 +45,7 @@ canvas {
         border-radius: 50%;
       }
     </style>
-    <script type="module" crossorigin src="/PortfolioVol2/assets/index-dCcfMW3u.js"></script>
+    <script type="module" crossorigin src="/PortfolioVol2/assets/index-C64zsA_7.js"></script>
     <link rel="stylesheet" crossorigin href="/PortfolioVol2/assets/index-CsinTNUW.css">
   </head>
   <body class="text-cyan-300 font-mono">
@@ -304,33 +304,7 @@ canvas {
 
     </main>
 
-    <script>
-      function showDockStatusAndScroll() {
-        const dockStatus = document.getElementById("dock-status");
-        if (dockStatus) {
-          dockStatus.classList.remove("hidden");
-          dockStatus.textContent = "✅ CORTEX ONLINE – Scrollar ner...";
-        }
-    
-        setTimeout(() => {
-          if (dockStatus) {
-            dockStatus.classList.add("hidden");
-          }
-    
-          const cortex = document.getElementById("cortex-ui");
-          if (cortex) {
-            // Fördröjd scroll för säker layout
-            setTimeout(() => {
-              cortex.scrollIntoView({ behavior: "smooth", block: "start" });
-            }, 200); // Vänta lite extra efter hidden
-          }
-    
-          document.body.style.overflow = "auto";
-        }, 2500);
-      }
-    
-      window.showDockStatusAndScroll = showDockStatusAndScroll;
-    </script>
+  
     
     
   </body>
