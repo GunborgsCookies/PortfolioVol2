@@ -169,6 +169,7 @@ function showDockPrompt() {
   });
 }
 
+
 // ... resten av filen är oförändrad ...
 
 
