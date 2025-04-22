@@ -27,7 +27,7 @@ let dockStarted = false;
 let warpTriggered = false;
 
 export function showDockStatusAndScroll() {
-  const terminal = document.getElementById("terminal-output");
+  const terminal = document.getElementById("terminal-lines");
   if (!terminal) return;
 
   const fullText = [
@@ -156,6 +156,9 @@ function showDockPrompt() {
     }, 20);
   });
 }
+
+// ... resten av filen är oförändrad ...
+
 
 // ... resten av filen är oförändrad ...
 
